@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- fichier css -->
+    <link rel="stylesheet" href="{% static './../../static/css/mymap.css' %}">
+     <link rel="stylesheet" href="{% static 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css' %}" />
+     <link rel="stylesheet" href="{% static 'https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css' %}" />
+    <!-- <link rel="stylesheet" href="{% static 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css' %}"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/> -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+        <!-- integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" -->
+
+    <!-- integration des marker -->
+
+
+    <title>MY MAP</title>
+</head>
+<body>
+    <div id="block1" onclick="block4()"></div>
+    <div id="block2" onclick="block3()"></div>
+    <div id="block3">
+        <label for="text"></label>
+        <input type="text" name="text" id="search" placeholder="Recherche Dans Mymap">
+        <img src="{% static './../../static/images/itin.png' %}" alt="itineraire" id="logo_itinearire">
+        <input type="button" value="search" id="bouton_recherche">
+    </div>
+    <div id="block4">
+        <input type="text" name="text" id="depart" placeholder="Depart">
+        <img src="{% static './../../static/images/itin.png' %}" alt="itineraire" id="logo_depart"  >
+
+        <input type="text" name="text" id="arrive" placeholder="Arrive">
+        <img src="{% static './../../static/images/itin.png' %}" alt="itineraire" id="logo_arrive"  >
+
+        <input type="button" value="search" id="bouton_itin" onclick="rechercher_itineraire()">
+
+    </div>
+    <div id="map"></div>
+
+    <!-- <div id="block1"> -->
+        <!-- <div id="icons">   
+            <p style="margin-left: 20px; font-size:larger;">MYMAP</p>
+            <div id="search">
+                <p>         
+                    <div id="block_recherche">
+                        <label for="ville"></label>
+                        <input type="text" name="ville" id="ville" placeholder="Recherche Dans Mymap">
+                        <input type="button" value="Search" id="search" style="background-color: #38f;">
+                    </div>
+                        <img src="{% static './../../static/images/itin.png' %}" alt="itineraire" id="logo_itinearire" onclick="lancer_recherche()" >
+                    <div id="block_itinireraire">
+                        <label for="ville_depart"></label>
+                        <input type="text" name="ville_depart" id="ville_depart" placeholder="zone de depart">
+                        <input type="text" name="ville_arrive" id="ville_arrive" placeholder="zone d'arrive">
+                    </div>
+                    <input type="button" value="Search" id="search2" style="background-color: #38f;">
+                </p>
+
+                <div class="result-block">
+                    <ul id="result-list" class="col-4 list-group">
+                    </ul>
+                  </div>
+                <p id="valeur_distance"></p>
+        
+            </div>
+        </div> -->
+    <!-- </div> -->
+    
+    
+    <script src="{% static './../../static/js/index.js' %}"></script>
+    <script src="{% static 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js' %}"></script>
+    <script src="{% static 'https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js' %}"></script>
+    <script src="{% static './../../static/js/mymap.js' %}"></script>
+</body>
+</html> 
