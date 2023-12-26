@@ -1,4 +1,7 @@
-var map = L.map('map').setView([6, 12.5], 10);
+var map = L.map('map').setView([3.839855, 11.507743], 13);
+let markerlist = [];
+
+
 
 function onMapClick(e) {
     alert("You clicked the map at " + e.latlng);
@@ -31,7 +34,7 @@ function block3(){
 window.onload = function(){
     var OpenStreetMap_Roberto = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
         maxZoom: 30,
-        minZoom: 1,
+        minZoom: 3,
         subdomains:['mt0','mt1','mt2','mt3'],
         attribution: '&copy; OpenStreetMap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         name:"tile"// permettra de ne pas supprimer la couche;
@@ -44,30 +47,148 @@ window.onload = function(){
         // let result_elmt = document.getElementById('result-list');
         let bouton=  document.getElementById('search');
         let bouton2=  document.getElementById('search2');
-        const currentMarkers = [];
-
-
-
-
-
-
 
         bouton_recherche= document.getElementById("bouton_recherche");
         ville_recherche = document.getElementById("search");
        
 
+        // // Créez une instance du contrôleur de routage
+        // let routingControl = L.Routing.control({
+        //   waypoints: [
+        //     L.latLng(51.5, -0.1), // Point de départ
+        //     L.latLng(51.3, -0.12) // Point d'arrivée
+        //   ],
+        //   routeWhileDragging: true // Permet de recalculer automatiquement l'itinéraire lors du déplacement des marqueurs de départ ou d'arrivée
+        // }).addTo(map);
 
-        function find(){
-                ville_recherche.value += " cameroun"
-                alert(ville_recherche.value)
-                fetch('https://nominatim.openstreetmap.org/search?format=json&polygon=1&addressdetails=1&q=' + ville_recherche.value)
-                .then(resultat=>resultat.json())
-                .then(parsedResult=>{
-                    setResultList(parsedResult);
-                })
-                ville_recherche.value =" "
-                alert("ok");
-        }
+        // // Écoutez l'événement de calcul d'itinéraire pour obtenir les détails de l'itinéraire
+        // routingControl.on('routesfound', function (e) {
+        //   var routes = e.routes;
+        //   // Traitez les détails de l'itinéraire ici
+        // });
+
+
+
+        // Créez une instance du contrôleur de routage
+var routingControl = L.Routing.control({
+  waypoints: [
+    L.latLng(51.5, -0.1), // Point de départ
+    L.latLng(51.3, -0.12) // Point d'arrivée
+  ],
+  routeWhileDragging: true // Permet de recalculer automatiquement l'itinéraire lors du déplacement des marqueurs de départ ou d'arrivée
+}).addTo(map);
+
+// Écoutez l'événement de calcul d'itinéraire pour obtenir les détails de l'itinéraire
+// routingControl.on('routesfound', function (e) {
+//   var routes = e.routes;
+//   console.log(routes)
+//   // Traitez les détails de l'itinéraire ici
+//   // Récupérer le tableau des détails de l'itinéraire
+//   var table = document.querySelector('.leaflet-routing-container ');
+  
+//   // Ajouter la classe CSS personnalisée
+//   table.classList.add('custom-routing-table');
+// });
+
+
+routingControl.on('routesfound', function (e) {
+  var routes = e.routes;
+  console.log(routes);
+  
+  // Récupérer le tableau des détails de l'itinéraire
+  var table = document.querySelector('.leaflet-routing-container table');
+  
+  // Modifier les styles inline du tableau
+  table.style.backgroundColor = '#f2f2f2';
+  table.style.border = '1px solid #ccc';
+  table.style.borderCollapse = 'collapse';
+  table.style.width = '100%';
+  
+  // Modifier les styles des cellules du tableau
+  var tableCells = table.querySelectorAll('td');
+  tableCells.forEach(function(cell) {
+    cell.style.padding = '5px';
+    cell.style.border = '1px solid #ccc';
+  });
+  
+  // Modifier les styles des lignes paires du tableau
+  var tableRowsEven = table.querySelectorAll('tr:nth-child(even)');
+  tableRowsEven.forEach(function(row) {
+    row.style.backgroundColor = '#e6e6e6';
+  });
+  
+  // Modifier les styles de la première ligne du tableau
+  var tableFirstRow = table.querySelector('tr:first-child');
+  tableFirstRow.style.fontWeight = 'bold';
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+        document.getElementById("search").addEventListener("keypress", function(e) {  
+            if(e.key === "Enter"){
+              fetch('https://nominatim.openstreetmap.org/search?format=json&polygon=1&addressdetails=1&q=' + ville_recherche.value+ ' cameroun')
+              // fetch('https://maps.googleapis.com/maps/api/geocode/json?address={ville_recherche.value}&key={AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg}')
+              .then(resultat=>resultat.json())
+              .then(parsedResult=>{
+                  setResultList(parsedResult);
+                  autoCompleteHandler("search","suggestions");
+              })
+
+            }
+        })
+            
+        
+
+
+        
+
+        document.getElementById("depart").addEventListener("keypress", function(e) {
+          if(e.key === "Enter"){
+            fetch('https://nominatim.openstreetmap.org/search?format=json&polygon=1&addressdetails=1&q=' + document.getElementById("depart").value+ ' cameroun')
+            // fetch('https://maps.googleapis.com/maps/api/geocode/json?address={ville_recherche.value}&key={AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg}')
+            
+            .then(resultat=>resultat.json())
+            .then(parsedResult=>{
+                setResultList(parsedResult);
+                document.getElementById("suggestions_itin2").innerHTML = ''
+                autoCompleteHandler("depart","suggestions_itin1");
+            })
+
+          }
+        })
+
+
+
+
+
+
+        document.getElementById("arrive").addEventListener("keypress", function(e) {
+          if(e.key === "Enter"){
+            fetch('https://nominatim.openstreetmap.org/search?format=json&polygon=1&addressdetails=1&q=' + document.getElementById("arrive").value+ ' cameroun')
+            // fetch('https://maps.googleapis.com/maps/api/geocode/json?address={ville_recherche.value}&key={AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg}')
+            
+            .then(resultat=>resultat.json())
+            .then(parsedResult=>{
+                setResultList(parsedResult);
+                document.getElementById("suggestions_itin1").innerHTML = ''
+                autoCompleteHandler("arrive","suggestions_itin2");
+            })
+
+          }
+        })
 
 
         bouton_recherche.addEventListener('click',()=>{
@@ -81,27 +202,37 @@ window.onload = function(){
             ville_recherche.value =" "
         })
         
+        
+        
+
+
         function setResultList(parsedResult) {
             console.log(parsedResult);
             if (parsedResult.length == 0) {
-                alert("Entrez une vrai ville");
+                // alert("Entrez une vrai ville");
             }
             else{
-                // for (let i = 0; i < parsedResult.length; i++) {
-                for (let i = 0; i < 1; i++) {
-                    // debut : ici on ajoute le nom de la ville sur le marker lors de la recherche 
+              removeMarkers()
+              for (let i = 0; i < parsedResult.length; i++) {
+                  console.log( "name : "+parsedResult[i].display_name + "\nlat :"+ parsedResult[i].lat + "lon:"+ parsedResult[i].lon);
+                    // debut : ici on ajoute le nom de la ville sur les markers lors de la recherche 
+                    
+                    destination.push(parsedResult[i].display_name)
+
                     var marker = L.marker([parsedResult[i].lat, parsedResult[i].lon]).addTo(map);
                     marker.bindPopup(parsedResult[i].name)
+                    markerlist.push(marker);
                     // fin 
-                }
-                for (const marker of currentMarkers) {
-                    map.removeLayer(marker);
-                }
+              }
             }
-            parsedResult =[];
-        }
+            /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+            
+            console.log(destination)
+            // destination.splice(0,destination.length);
+            
+            // parsedResult =[];
+          }
 }
-
 
 
 function geolocation(){
@@ -125,6 +256,15 @@ function geolocation(){
 geolocation();
 
 
+
+
+function removeMarkers() {
+  markerlist.forEach(function(markerlist) {
+    markerlist.removeFrom(map);
+  });
+  // Videz le tableau des marqueurs
+  markerlist = [];
+}
 
 
 
@@ -186,138 +326,66 @@ function lancer_recherche(){
 }
 
 
-function autocomplete(inp, arr) {
-    /*the autocomplete function takes two arguments,
-    the text field element and an array of possible autocompleted values:*/
-    var currentFocus;
-    /*execute a function when someone writes in the text field:*/
-    inp.addEventListener("input", function(e) {
 
-        alert ("go");
-        find();
+
+let destination = ["Italy", "Spain", "Portugal", "Brazil", "Brazi", "Brazil"];
 
 
 
 
+function autoCompleteHandler(id,field) {
+  let inputField = document.getElementById(id);
+  let ulField = document.getElementById(field);
+  ulField.addEventListener('click', selectItem);
+  changeAutoComplete();
 
-        var a, b, i, val = this.value;
-        /*close any already open lists of autocompleted values*/
-        closeAllLists();
-        if (!val) { return false;}
-        currentFocus = -1;
-        /*create a DIV element that will contain the items (values):*/
-        a = document.createElement("DIV");
-        a.setAttribute("id", this.id + "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
-        /*append the DIV element as a child of the autocomplete container:*/
-        this.parentNode.appendChild(a);
-        /*for each item in the array...*/
-        for (i = 0; i < arr.length; i++) {
-          /*check if the item starts with the same letters as the text field value:*/
-          if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-            /*create a DIV element for each matching element:*/
-            b = document.createElement("DIV");
-            /*make the matching letters bold:*/
-            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-            b.innerHTML += arr[i].substr(val.length);
-            /*insert a input field that will hold the current array item's value:*/
-            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-            /*execute a function when someone clicks on the item value (DIV element):*/
-            b.addEventListener("click", function(e) {
-                /*insert the value for the autocomplete text field:*/
-                inp.value = this.getElementsByTagName("input")[0].value;
-                /*close the list of autocompleted values,
-                (or any other open lists of autocompleted values:*/
-                closeAllLists();
-            });
-            a.appendChild(b);
-          }
-        }
+  function changeAutoComplete() {
+    let data = inputField.value;
+    ulField.innerHTML = '';
+    if (data.length) {
+      let autoCompleteValues = autoComplete(data);
+      autoCompleteValues.forEach(value => {
+        addItem(value);
+      });
+    }
+  }
+
+  function removeDiacritics(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+  
+  function autoComplete(inputValue) {
+    const normalizedInputValue = removeDiacritics(inputValue.toLowerCase());
+    return destination.filter((value) => {
+      const normalizedValue = removeDiacritics(value.toLowerCase());
+      return normalizedValue.includes(normalizedInputValue);
     });
-    /*execute a function presses a key on the keyboard:*/
-    // inp.addEventListener("keydown", function(e) {
+  }
 
+  function addItem(value) {
+    ulField.innerHTML += `<li>${value}</li>`;
+  }
 
+  function selectItem({ target }) {
+    document.getElementById(id).value = ''
+    if (target.tagName === 'LI') {
+      inputField.value = target.textContent;
+      ulField.innerHTML = '';
 
-
-    //     var x = document.getElementById(this.id + "autocomplete-list");
-    //     if (x) x = x.getElementsByTagName("div");
-    //     if (e.keyCode == 40) {
-    //       /*If the arrow DOWN key is pressed,
-    //       increase the currentFocus variable:*/
-    //       currentFocus++;
-    //       /*and and make the current item more visible:*/
-    //       addActive(x);
-    //     } else if (e.keyCode == 38) { //up
-    //       /*If the arrow UP key is pressed,
-    //       decrease the currentFocus variable:*/
-    //       currentFocus--;
-    //       /*and and make the current item more visible:*/
-    //       addActive(x);
-    //     } else if (e.keyCode == 13) {
-    //       /*If the ENTER key is pressed, prevent the form from being submitted,*/
-    //       e.preventDefault();
-    //       if (currentFocus > -1) {
-    //         /*and simulate a click on the "active" item:*/
-    //         if (x) x[currentFocus].click();
-    //       }
-    //     }
-    // });
-
-
-    function addActive(x) {
-      /*a function to classify an item as "active":*/
-      if (!x) return false;
-      /*start by removing the "active" class on all items:*/
-      removeActive(x);
-      if (currentFocus >= x.length) currentFocus = 0;
-      if (currentFocus < 0) currentFocus = (x.length - 1);
-      /*add class "autocomplete-active":*/
-      x[currentFocus].classList.add("autocomplete-active");
+      fetch('https://nominatim.openstreetmap.org/search?format=json&polygon=1&addressdetails=1&q=' + target.textContent)              
+      .then(resultat=>resultat.json())
+      .then(parsedResult=>{
+          removeMarkers()
+          var marker = L.marker([parsedResult[0].lat, parsedResult[0].lon]).addTo(map);
+          marker.bindPopup(parsedResult[0].name)
+          markerlist.push(marker);
+          // autoCompleteHandler(id,field);
+      })  
     }
-    function removeActive(x) {
-      /*a function to remove the "active" class from all autocomplete items:*/
-      for (var i = 0; i < x.length; i++) {
-        x[i].classList.remove("autocomplete-active");
-      }
-    }
-    function closeAllLists(elmnt) {
-      /*close all autocomplete lists in the document,
-      except the one passed as an argument:*/
-      var x = document.getElementsByClassName("autocomplete-items");
-      for (var i = 0; i < x.length; i++) {
-        if (elmnt != x[i] && elmnt != inp) {
-          x[i].parentNode.removeChild(x[i]);
-        }
-      }
-    }
-    /*execute a function when someone clicks in the document:*/
-    document.addEventListener("click", function (e) {
-        closeAllLists(e.target);
-    });
+  }
 }
-  
 
 
 
 
 
-
-  /*An array containing all the country names in the world:*/
-  var countries = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua & Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia & Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Cayman Islands","Central Arfrican Republic","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cuba","Curacao","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia","Nauro","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","North Korea","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre & Miquelon","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","St Kitts & Nevis","St Lucia","St Vincent","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad & Tobago","Tunisia","Turkey","Turkmenistan","Turks & Caicos","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States of America","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"];
-  
-  /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
-  autocomplete(document.getElementById("search"), countries);
-
-  /*An array containing all the country names in the world:*/
-  var tab_depart = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua & Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia & Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Cayman Islands","Central Arfrican Republic","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cuba","Curacao","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia","Nauro","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","North Korea","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre & Miquelon","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","St Kitts & Nevis","St Lucia","St Vincent","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad & Tobago","Tunisia","Turkey","Turkmenistan","Turks & Caicos","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States of America","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"];
-  
-  /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
-  autocomplete(document.getElementById("depart"), tab_depart);
-  
-    /*An array containing all the country names in the world:*/
-    var tab_arrive = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua & Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia & Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Cayman Islands","Central Arfrican Republic","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cuba","Curacao","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia","Nauro","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","North Korea","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre & Miquelon","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","St Kitts & Nevis","St Lucia","St Vincent","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad & Tobago","Tunisia","Turkey","Turkmenistan","Turks & Caicos","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States of America","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"];
-  
-    /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
-    autocomplete(document.getElementById("arrive"), tab_arrive);
-    

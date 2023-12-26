@@ -23,6 +23,19 @@
 
 
     <title>MY MAP</title>
+    <style>
+        li{
+            z-index: 999999999;
+            width: 200px;
+            height: auto;
+            background-color: rgb(25, 190, 196);
+            cursor: pointer;
+            list-style-type: none;
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <div id="block1" onclick="block4()"></div>
@@ -31,16 +44,19 @@
         <label for="text"></label>
         <input type="text" name="text" id="search" placeholder="Recherche Dans Mymap">
         <img src="{% static './../../static/images/itin.png' %}" alt="itineraire" id="logo_itinearire">
+        <ul id="suggestions" style="z-index: 9999999;"></ul>
         <input type="button" value="search" id="bouton_recherche">
     </div>
     <div id="block4">
         <input type="text" name="text" id="depart" placeholder="Depart">
         <img src="{% static './../../static/images/itin.png' %}" alt="itineraire" id="logo_depart"  >
+        
 
         <input type="text" name="text" id="arrive" placeholder="Arrive">
         <img src="{% static './../../static/images/itin.png' %}" alt="itineraire" id="logo_arrive"  >
-
-        <input type="button" value="search" id="bouton_itin" onclick="rechercher_itineraire()">
+        <input type="button" value="search" id="bouton_recherche" >
+        <ul id="suggestions_itin1" style="z-index: 9999999;"></ul>
+        <ul id="suggestions_itin2" style="z-index: 9999999;"></ul>
 
     </div>
     <div id="map"></div>
@@ -76,9 +92,10 @@
     
     
     <script src="{% static './../../static/js/index.js' %}"></script>
-    <script src="{% static 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js' %}"></script>
-    <script src="{% static 'https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js' %}"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <script src="{% static './../../static/js/mymap.js' %}"></script>
+
     <!-- <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js" charset="utf-8"></script> -->
 </body>
 </html> 
