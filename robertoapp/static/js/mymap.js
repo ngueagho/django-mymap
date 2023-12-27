@@ -67,63 +67,76 @@ window.onload = function(){
         //   // Traitez les détails de l'itinéraire ici
         // });
 
+        
 
+function tracer_route(){
+              if(document.getElementById("depart").value === "" || document.getElementById("arrive").value === "")
+              {
 
-        // Créez une instance du contrôleur de routage
-var routingControl = L.Routing.control({
-  waypoints: [
-    L.latLng(51.5, -0.1), // Point de départ
-    L.latLng(51.3, -0.12) // Point d'arrivée
-  ],
-  routeWhileDragging: true // Permet de recalculer automatiquement l'itinéraire lors du déplacement des marqueurs de départ ou d'arrivée
-}).addTo(map);
+              }
+              else{
 
-// Écoutez l'événement de calcul d'itinéraire pour obtenir les détails de l'itinéraire
-// routingControl.on('routesfound', function (e) {
-//   var routes = e.routes;
-//   console.log(routes)
-//   // Traitez les détails de l'itinéraire ici
-//   // Récupérer le tableau des détails de l'itinéraire
-//   var table = document.querySelector('.leaflet-routing-container ');
-  
-//   // Ajouter la classe CSS personnalisée
-//   table.classList.add('custom-routing-table');
-// });
-
-
-routingControl.on('routesfound', function (e) {
-  var routes = e.routes;
-  console.log(routes);
-  
-  // Récupérer le tableau des détails de l'itinéraire
-  var table = document.querySelector('.leaflet-routing-container table');
-  
-  // Modifier les styles inline du tableau
-  table.style.backgroundColor = '#f2f2f2';
-  table.style.border = '1px solid #ccc';
-  table.style.borderCollapse = 'collapse';
-  table.style.width = '100%';
-  
-  // Modifier les styles des cellules du tableau
-  var tableCells = table.querySelectorAll('td');
-  tableCells.forEach(function(cell) {
-    cell.style.padding = '5px';
-    cell.style.border = '1px solid #ccc';
-  });
-  
-  // Modifier les styles des lignes paires du tableau
-  var tableRowsEven = table.querySelectorAll('tr:nth-child(even)');
-  tableRowsEven.forEach(function(row) {
-    row.style.backgroundColor = '#e6e6e6';
-  });
-  
-  // Modifier les styles de la première ligne du tableau
-  var tableFirstRow = table.querySelector('tr:first-child');
-  tableFirstRow.style.fontWeight = 'bold';
-});
+                // Créez une instance du contrôleur de routage
+                var routingControl = L.Routing.control({
+                  waypoints: [
+                    L.latLng(51.5, -0.1), // Point de départ
+                    L.latLng(51.3, -0.12) // Point d'arrivée
+                  ],
+                  routeWhileDragging: true // Permet de recalculer automatiquement l'itinéraire lors du déplacement des marqueurs de départ ou d'arrivée
+                }).addTo(map);
 
 
 
+
+                routingControl.on('routesfound', function (e) {
+                  var routes = e.routes;
+                  console.log(routes);
+
+                  // Ajouter un délai avant de modifier le style
+                  setTimeout(function() {
+                    // Récupérer le tableau des détails de l'itinéraire
+                    var table = document.querySelector('.leaflet-routing-container table');
+                    
+                    if (table) {
+                      // Modifier les styles du tableau...
+                      console.log(table)
+
+                      // Modifier les styles du tableau
+                      table.style.backgroundColor = '#f2f2f2';
+                      // table.style.marginTop = '140px';
+                      table.style.border = '1px solid #ccc';
+                      // table.style.borderCollapse = 'collapse';
+                      table.style.width = '100%';
+                      // table.style.paddingTop = '50px'
+
+                      // Masquer l'élément parent du tableau
+                      var parentElement = table.parentNode;
+                      // parentElement.style.visibility = 'hidden';
+                      parentElement.style.maxHeight = '500px';
+                      // parentElement.style.marginTop = '40px';
+                      parentElement.style.overflowY= 'auto';
+                      
+                      // Modifier les styles des cellules du tableau
+                      var tableCells = table.querySelectorAll('td');
+                      tableCells.forEach(function(cell) {
+                        cell.style.padding = '5px';
+                        cell.style.border = '1px solid #ccc';
+                      });
+                      
+                      // Modifier les styles des lignes paires du tableau
+                      var tableRowsEven = table.querySelectorAll('tr:nth-child(even)');
+                      tableRowsEven.forEach(function(row) {
+                        row.style.backgroundColor = '#e6e6e6';
+                      });
+                      
+                      // Modifier les styles de la première ligne du tableau
+                      var tableFirstRow = table.querySelector('tr:first-child');
+                      tableFirstRow.style.fontWeight = 'bold';  
+                    }
+                  }, 100);
+                });
+              }
+}
 
 
 
@@ -379,6 +392,8 @@ function autoCompleteHandler(id,field) {
           var marker = L.marker([parsedResult[0].lat, parsedResult[0].lon]).addTo(map);
           marker.bindPopup(parsedResult[0].name)
           markerlist.push(marker);
+          //pour tracer la route 
+          tracer_route()
           // autoCompleteHandler(id,field);
       })  
     }

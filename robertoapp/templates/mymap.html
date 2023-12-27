@@ -54,7 +54,7 @@
 
         <input type="text" name="text" id="arrive" placeholder="Arrive">
         <img src="{% static './../../static/images/itin.png' %}" alt="itineraire" id="logo_arrive"  >
-        <input type="button" value="search" id="bouton_recherche" >
+        <input type="button" value="search" id="bouton_recherche" onclick="tracer_route()" >
         <ul id="suggestions_itin1" style="z-index: 9999999;"></ul>
         <ul id="suggestions_itin2" style="z-index: 9999999;"></ul>
 
