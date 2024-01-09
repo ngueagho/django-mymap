@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Recherche d'adresse avec l'API Google Maps</title>
+    <style>
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Recherche d'adresse avec l'API Google Maps</h1>
+    <input type="text" id="address-input" placeholder="Entrez une adresse">
+    <button onclick="searchAddress()">Rechercher</button>
+    <div id="map"></div>
+
+    <script>
+      // Fonction de recherche d'adresse
+      function searchAddress() {
+        const addressInput = document.getElementById("address-input").value;
+
+        // Créez une instance du service de géocodage
+        const geocoder = new google.maps.Geocoder();
+
+        // Effectuez la recherche d'adresse
+        geocoder.geocode({ address: addressInput }, (results, status) => {
+          if (status === "OK") {
+            // Récupérez les coordonnées géographiques de la première adresse trouvée
+            const location = results[0].geometry.location;
+
+            // Créez une instance de carte centrée sur la position trouvée
+            const map = new google.maps.Map(document.getElementById("map"), {
+              center: location,
+              zoom: 12,
+            });
+
+            // Ajoutez un marqueur à la position trouvée
+            const marker = new google.maps.Marker({
+              position: location,
+              map: map,
+              title: results[0].formatted_address,
+            });
+          } else {
+            alert("Adresse introuvable. Veuillez réessayer.");
+          }
+        });
+      }
+
+      // Fonction d'initialisation de la carte
+      function initMap() {
+        // Cette fonction est vide, car nous initialisons la carte directement dans la fonction searchAddress()
+        // Si vous souhaitez personnaliser l'initialisation de la carte, vous pouvez ajouter votre code ici
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao&libraries=places&callback=initMap" async defer></script>
+  </body>
+</html>
