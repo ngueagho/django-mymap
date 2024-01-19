@@ -40,3 +40,14 @@ def ville_list_view(request):
     villes = Villes.objects.all()
     context = {'villes': villes}
     return render(request, 'ville_list.html', context)
+
+
+def create_ville(request):
+    if request.method == 'POST':
+        form = VillesForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('index')  # Redirige vers la page d'accueil ou une autre page appropriée
+    else:
+        form = VillesForm()
+    return render(request, 'villes/create.html', {'form': form})
